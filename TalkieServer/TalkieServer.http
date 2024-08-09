@@ -1,0 +1,6 @@
+@TalkieServer_HostAddress = http://localhost:5133
+
+GET {{TalkieServer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
