@@ -130,5 +130,34 @@ namespace TalkieServer.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
             _logger.LogInformation($"{Context.ConnectionId} left group {groupName}");
         }
+
+        // Новый метод для отправки файлов
+        public async Task SendFile(string fileName, byte[] fileContent, string recipient = null)
+        {
+            if (fileContent == null || fileContent.Length == 0)
+            {
+                _logger.LogWarning("SendFile called with null or empty file content.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                _logger.LogWarning("SendFile called with null or empty fileName.");
+                return;
+            }
+
+            _logger.LogInformation($"File {fileName} sent.");
+
+            // Если указан получатель, отправляем файл ему
+            if (!string.IsNullOrEmpty(recipient) && _users.TryGetValue(recipient, out var connectionId))
+            {
+                await Clients.Client(connectionId).SendAsync("ReceiveFile", fileName, fileContent);
+            }
+            else
+            {
+                // Иначе отправляем файл всем клиентам
+                await Clients.All.SendAsync("ReceiveFile", fileName, fileContent);
+            }
+        }
     }
 }

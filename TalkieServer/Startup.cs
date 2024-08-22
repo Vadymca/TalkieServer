@@ -37,7 +37,5 @@ namespace TalkieServer
 
             logger.LogInformation("Server started and listening on http://localhost:5133");
         }
-
-
     }
 }
