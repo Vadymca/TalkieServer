@@ -131,7 +131,7 @@ namespace TalkieServer.Hubs
             _logger.LogInformation($"{Context.ConnectionId} left group {groupName}");
         }
 
-        // Новый метод для отправки файлов
+       
         public async Task SendFile(string fileName, byte[] fileContent, string recipient = null)
         {
             if (fileContent == null || fileContent.Length == 0)
@@ -148,14 +148,12 @@ namespace TalkieServer.Hubs
 
             _logger.LogInformation($"File {fileName} sent.");
 
-            // Если указан получатель, отправляем файл ему
             if (!string.IsNullOrEmpty(recipient) && _users.TryGetValue(recipient, out var connectionId))
             {
                 await Clients.Client(connectionId).SendAsync("ReceiveFile", fileName, fileContent);
             }
             else
             {
-                // Иначе отправляем файл всем клиентам
                 await Clients.All.SendAsync("ReceiveFile", fileName, fileContent);
             }
         }
